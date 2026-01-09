@@ -13,6 +13,40 @@ const CoursePreView =  () => {
   const { courseId : id } = useParams();
   const [courseDetails, setcourseDetails] = useState<Course>()
 
+  const fps = 30;
+  const slides = courseDetails?.chapterContentSlides ?? [];
+  const [durationBySlide, setdurationBySlide] = useState<Record<string, number> | null>(null);
+
+  useEffect(() => {
+    if (!slides.length) return;
+
+    let cancelled = false;
+
+    const run = async () => {
+      try {
+        const entries = await Promise.all(
+          slides.map(async (slide) => {
+            const audioData = await getAudioData(slide.audioFileUrl);
+            const frames = Math.max(1, Math.ceil(audioData.durationInSeconds * fps));
+            return [slide.slideId, frames] as const;
+          })
+        );
+
+        if (!cancelled) {
+          setdurationBySlide(Object.fromEntries(entries));
+        }
+      } catch (err) {
+        console.error("Failed to compute slide durations", err);
+      }
+    };
+
+    run();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slides, fps]);
+
 const courseHandler = async () => {
     const loadingToast = toast.loading("Fetching Course Detail");
     try {
@@ -41,8 +75,7 @@ const courseHandler = async () => {
             courseId: id
           });
           
-          toast.success("Video Content Generated, CHECK!CHECK!", { id: toastLoading });
-          console.log("CHECK HERE FOR THE RESULT : " + result?.data?.audiFileUrl[0] )
+         toast.success("Video content generated successfully", { id: toastLoading });          console.log("CHECK HERE FOR THE RESULT : " + result?.data?.audiFileUrl[0] )
         } catch (error) {
           toast.error(`Failed to generate content for chapter ${i + 1}`, { id: toastLoading });
           console.error(`Error generating video for chapter ${i}:`, error);
@@ -62,43 +95,7 @@ const courseHandler = async () => {
 
 
 
-      const fps = 30;
-      const slides = courseDetails?.chapterContentSlides??[];
-      const [durationBySlide, setdurationBySlide] = useState<Record<string,number>|null>(null);
   
-  
-     useEffect(() => {
-    if (!slides.length) return;
-  
-    let cancelled = false;
-  
-    const run = async () => {
-      try {
-        const entries = await Promise.all(
-                  slides.map(async (slide) => {
-                  const audioData = await getAudioData(slide.audioFileUrl);
-                  const frames = Math.max(
-                      1,
-                      Math.ceil(audioData.durationInSeconds * fps)
-                  );
-                  return [slide.slideId, frames] as const;
-                  })
-              );
-  
-              if (!cancelled) {
-                  setdurationBySlide(Object.fromEntries(entries));
-              }
-              } catch (err) {
-              console.error("Failed to compute slide durations", err);
-              }
-          };
-  
-          run();
-  
-          return () => {
-              cancelled = true;
-          };
-          }, [slides, fps]);
 
   return (
     <div className="w-full">

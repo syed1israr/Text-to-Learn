@@ -14,10 +14,12 @@ const CourseInfoCard = ({course,durationBySlide} : {course:Course | undefined,du
 
 const durationInFrames = useMemo(() => {
   if (!durationBySlide) return 0;
-
-  return slides.reduce((sum, slide) => {
-    return sum + (durationBySlide[slide.slideId] ?? fps * 6);
-  }, 0);
+  const GAP_FRAMES = Math.round(1 * fps);
+  return slides.reduce((sum, slide, idx) => {
+    const dur = durationBySlide[slide.slideId] ?? fps * 6;
+    const gap = idx === slides.length - 1 ? 0 : GAP_FRAMES;
+   return sum + dur + gap;
+}, 0);
 }, [durationBySlide, slides, fps]);
 
 console.log("durationInFrames", durationInFrames);

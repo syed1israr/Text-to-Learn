@@ -1,16 +1,20 @@
 import { db } from "@/db";
 import { chapterContentSlides, courseTable } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { currentUser } from "@clerk/nextjs/server";
+import { asc, desc, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
  export async function GET(req: NextRequest) {
      const courseId = req.nextUrl.searchParams.get("courseId");
- 
+     const user = await currentUser();
+
      if (!courseId) {
-         return NextResponse.json(
-             { error: "courseId is required" },
-             { status: 400 }
-         );
+        
+        const userCourses = await db.select().from(courseTable).where(
+            eq(courseTable.userId,user?.primaryEmailAddress?.emailAddress as string)
+        ).orderBy(desc(courseTable.id));
+
+        return NextResponse.json(userCourses)
      }
  
     try {
@@ -30,7 +34,12 @@ import { NextRequest, NextResponse } from "next/server";
          const slides = await db
              .select()
              .from(chapterContentSlides)
-             .where(eq(chapterContentSlides.courseId, courseId));
+             .where(eq(chapterContentSlides.courseId, courseId))
+  .orderBy(
+    asc(chapterContentSlides.chapterId),
+    asc(chapterContentSlides.slideIndex),
+    asc(chapterContentSlides.id),
+  );
  
          return NextResponse.json({
              ...res[0],
