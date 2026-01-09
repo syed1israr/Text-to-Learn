@@ -127,7 +127,10 @@ const SaveAudioToStorage = async( audioBuffer:Buffer,fileName:string) =>{
   if (!containerName) throw new Error("AZURE_STORAGE_CONTAINER is not configured");
   const blobService = BlobServiceClient.fromConnectionString(conn);
   const container = blobService.getContainerClient(containerName);
-  const blobName = `${fileName}.mp3`;
+  
+  const cleanName = fileName.replace(/\.mp3$/, '');
+  const blobName = `${cleanName}.mp3`;
+
   const blockBlob = container.getBlockBlobClient(blobName);
     
   await blockBlob.uploadData(audioBuffer,{
