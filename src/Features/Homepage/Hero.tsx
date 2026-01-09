@@ -14,16 +14,18 @@ import { courseGeneratorData } from '@/lib/constant'
 import axios from 'axios'
 import { toast } from 'sonner'
 import { SignInButton, useUser } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
 
 
 const Hero = () => {
   const [input, setInput] = useState('')
   const [type, settype] = useState('full-course')
   const [loading, setloading] = useState(false);
+  const router = useRouter();
 
   const course_layout = async() =>{
     const toastId = toast.loading("Generating Course")
-    const courseId = await crypto.randomUUID();
+    const courseId =  crypto.randomUUID();
     try {
       setloading(true);
       const res = await axios.post('/api/course-layout',{
@@ -34,8 +36,10 @@ const Hero = () => {
       console.log("data",res.data)
       setloading(false);
       toast.success("Course Generated Successfully", {id : toastId});
+      router.push(`/course/${courseId}`)
     } catch (error) {
-      console.log("course_layout_error",error)
+      console.log("course_layout_error",error);
+      setloading(false);
       toast.error("something Went Wrong",{id:toastId})
     }
   }
@@ -57,6 +61,7 @@ const Hero = () => {
           className="flex field-sizing-content min-h-24 w-full resize-none rounded-lg bg-input px-4 py-3 text-base text-foreground placeholder:text-muted-foreground transition-[color,box-shadow] outline-none focus:ring-2 focus:ring-primary md:text-sm border border-border"
           placeholder="Describe your course idea..."
           value={input}
+          disabled={loading}
           onChange={(e) => setInput(e.target.value)}
         />
       {user ?  <InputGroupAddon align="block-end" className="gap-2 mt-4 flex">
@@ -78,7 +83,7 @@ const Hero = () => {
       </div>
 
       <div className='flex gap-4 mt-12 max-w-4xl flex-wrap justify-center'>
-        {courseGeneratorData.map((m,idx) => (
+        {courseGeneratorData.map((m) => (
           <div key={m.id} className='hover-lift' onClick={() => setInput(m.prompt)}>
             <button className='border border-primary/30 rounded-xl px-4 py-2 text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors duration-200'>
               {m.title}

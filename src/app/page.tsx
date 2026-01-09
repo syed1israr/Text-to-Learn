@@ -5,7 +5,6 @@ import Hero from '@/Features/Homepage/Hero'
 const page = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Header/>
       <main className="flex-1">
         <Hero/>
         <CourseList/>

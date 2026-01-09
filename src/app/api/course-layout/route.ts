@@ -66,15 +66,31 @@ export async function POST(req: NextRequest) {
     }
 
     // 5. Persist to database
-    await db.insert(courseTable).values({
-      courseId,
-      courseName: parsedCourse.courseName,
-      userInput,
-      type,
-      courseLayout: parsedCourse,
-      userId: email, 
-    });
-
+       // 5. Persist to database
+    try {
+       await db.insert(courseTable).values({
+         courseId,
+         courseName: parsedCourse.courseName,
+         userInput,
+         type,
+         courseLayout: parsedCourse,
+         userId: email, 
+       });
+   } catch (dbError: unknown) {
+      console.error("Database error:", dbError);
+     if (dbError instanceof Error && dbError.message.includes('unique')) {
+       return NextResponse.json(
+        { error: "Course ID already exists" },
+          { status: 409 }
+      );
+      }
+     if (dbError instanceof Error && dbError.message.includes('foreign key')) {
+       return NextResponse.json(
+        { error: "User not found" },          { status: 400 }
+        );
+    }
+    throw dbError;
+   }
     // 6. Respond with generated course
     return NextResponse.json(parsedCourse, { status: 201 });
 
