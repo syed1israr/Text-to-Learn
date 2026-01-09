@@ -1,4 +1,4 @@
-import { integer, pgTable, varchar, timestamp, json } from "drizzle-orm/pg-core";
+import { integer, pgTable, varchar, timestamp, json, text } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -17,3 +17,29 @@ export const courseTable = pgTable("courses", {
   courseLayout: json(),
   createdAt: timestamp({ mode: "date" }).defaultNow(),
 });
+
+
+export const chaptersTable = pgTable("chapters",{
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    courseId: varchar({ length: 255 }).notNull().references(() => courseTable.courseId),
+    chapterId: varchar({ length: 255 }).notNull().unique(),
+    chapterTitle: varchar({ length: 255 }).notNull(),
+    videoContent: json(),
+    captions:json(),
+    audioFileurl: varchar({ length:1024}),
+    createdAt: timestamp({ mode: "date" }).defaultNow(),
+})
+
+
+export const chapterContentSlides = pgTable("chapter_content_slies",{
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    courseId: varchar({ length: 255 }).notNull(),
+    chapterId: varchar({ length: 255 }).notNull(),
+    slideId: varchar({ length:255 }).notNull(),
+    slideIndex: integer().notNull(),
+    audioFileName: varchar({length:255}).notNull(),
+    narration: json().notNull(),
+    html: text(),
+    revelData: json().notNull(),
+    audioFileUrl: varchar({ length:1024}).notNull()
+})
