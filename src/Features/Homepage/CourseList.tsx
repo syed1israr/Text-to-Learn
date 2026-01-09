@@ -9,7 +9,6 @@ const CourseList = () => {
           <p className="text-lg text-muted-foreground">Manage and track all your generated courses in one place</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Placeholder for course cards */}
           <div className="col-span-full flex items-center justify-center py-12">
             <p className="text-muted-foreground text-lg">No courses generated yet. Start by creating your first course above.</p>
           </div>
