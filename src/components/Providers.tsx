@@ -27,7 +27,9 @@ export const Providers = ({ children } : { children : React.ReactNode} ) =>{
                 disableTransitionOnChange
                 >
                 <UserDetailContext.Provider value={{User,setUser}}>
-                    {children}
+                    <div>
+                        {children}
+                    </div>
                 </UserDetailContext.Provider>
                 </ThemeProvider>
         </ClerkProvider>

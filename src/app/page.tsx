@@ -1,12 +1,15 @@
-import { Button } from '@/components/ui/button'
-import { UserButton } from '@clerk/nextjs'
+import CourseList from '@/Features/Homepage/CourseList'
+import Header from '@/Features/Homepage/Header'
+import Hero from '@/Features/Homepage/Hero'
+
 const page = () => {
   return (
-    <div>
-      <Button variant={"destructive"}>
-        Click me
-      </Button>
-      <UserButton/>
+    <div className="min-h-screen bg-background text-foreground">
+      <Header/>
+      <main className="flex-1">
+        <Hero/>
+        <CourseList/>
+      </main>
     </div>
   )
 }
