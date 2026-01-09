@@ -101,7 +101,11 @@ export async function POST(req: NextRequest) {
               })
           )
 
-        return NextResponse.json({...videoContentJson, audiFileUrl});
+            const slidesWithAudio = videoContentJson.map((s: any, i: number) => ({
+                            ...s,
+                            audioFileUrl: audiFileUrl[i] ?? "",
+                            }));
+        return NextResponse.json({ slides: slidesWithAudio });
     } catch (error) {
         console.error("Video generation error:", error);
         return NextResponse.json(
@@ -117,23 +121,21 @@ export async function POST(req: NextRequest) {
 
 
 const SaveAudioToStorage = async( audioBuffer:Buffer,fileName:string) =>{
-    const blobService = BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING!);
-    const container = blobService.getContainerClient(process.env.AZURE_STORAGE_CONTAINER!);
-    if (!process.env.AZURE_STORAGE_CONNECTION_STRING) {
-        throw new Error('AZURE_STORAGE_CONNECTION_STRING is not configured');
-    }
-    const blobName = `${fileName}.mp3`;
-    const blockBlob = container.getBlockBlobClient(blobName);
-    if (!process.env.AZURE_STORAGE_CONTAINER) {
-        throw new Error('AZURE_STORAGE_CONTAINER is not configured');
-    }
+  const conn = process.env.AZURE_STORAGE_CONNECTION_STRING;
+  const containerName = process.env.AZURE_STORAGE_CONTAINER;
+  if (!conn) throw new Error("AZURE_STORAGE_CONNECTION_STRING is not configured");
+  if (!containerName) throw new Error("AZURE_STORAGE_CONTAINER is not configured");
+  const blobService = BlobServiceClient.fromConnectionString(conn);
+  const container = blobService.getContainerClient(containerName);
+  const blobName = `${fileName}.mp3`;
+  const blockBlob = container.getBlockBlobClient(blobName);
     
-    await blockBlob.uploadData(audioBuffer,{
-        blobHTTPHeaders:{
-            blobContentType:"audio/mpeg",
-            blobCacheControl:"public, max-age=32536000, immutable"
-        }
-    })
+  await blockBlob.uploadData(audioBuffer,{
+      blobHTTPHeaders:{
+          blobContentType:"audio/mpeg",
+          blobCacheControl:"public, max-age=32536000, immutable"
+      }
+  })
   const publicBase = process.env.AZURE_STORAGE_PUBLIC_BASE_URL; 
   const url = publicBase ? publicBase + "/" + container.containerName + "/" + blobName : blockBlob.url; 
   return url;

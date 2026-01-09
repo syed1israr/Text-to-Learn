@@ -117,7 +117,7 @@ const Chapters =({course,durationBySlide} : {course:Course | undefined,durationB
                                 {playingChapter === i ? (
                                   <div className='mt-6 space-y-3'>
                                     <div className='relative w-full bg-black rounded-xl overflow-hidden'>
-                                      <Player
+                                        <Player
                                         component={CourseComposition}
                                         durationInFrames={getChapterinDuration(m.chapterId)}
                                         compositionWidth={1280}
@@ -125,12 +125,8 @@ const Chapters =({course,durationBySlide} : {course:Course | undefined,durationB
                                         fps={30}
                                         controls
                                         inputProps={{
-                                        slides:slides,
+                                        slides: slides.filter(s => s.chapterId === m.chapterId),
                                         durationsBySlideId:durationBySlide ?? {}
-                                        }}
-                                        style={{
-                                          width: "100%",
-                                          aspectRatio: "16/9"
                                         }}
                                       />
                                     </div>
