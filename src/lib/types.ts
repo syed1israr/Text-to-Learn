@@ -1,11 +1,11 @@
 export type Course={
-       courseId:string;
-       courseName:string;
-       type:string;
-       createdAt:string;
-       id:number;
-       courseLayout:courseLayout;
-       chapterContentSlides:chapterContentSlides;
+        courseId:string;
+        courseName:string;
+        type:string;
+        createdAt:string;
+        id:number;
+        courseLayout:courseLayout;
+        chapterContentSlides:chapterContentSlides[];
 }
 
 
@@ -38,4 +38,5 @@ export type chapterContentSlides={
      }
      html:string;
      revelData:string[];
+     audioFileUrl:string;
 }

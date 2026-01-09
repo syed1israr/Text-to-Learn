@@ -1,12 +1,30 @@
 import { Course } from '@/lib/types'
-import { BookOpen, ChartNoAxesColumnIncreasing, SparkleIcon, Users, Award } from 'lucide-react'
-import { useState } from 'react'
 import { Player } from '@remotion/player'
-import ChapterVideo from './ChapterVideo'
-
-const CourseInfoCard = ({course} : {course:Course | undefined} ) => {
+import { Award, BookOpen, ChartNoAxesColumnIncreasing, Loader2Icon, SparkleIcon } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { CourseComposition } from './ChapterVideo'
+const CourseInfoCard = ({course,durationBySlide} : {course:Course | undefined,durationBySlide:Record<string,number>|null} ) => {
   const [isVideoOpen, setIsVideoOpen] = useState(false)
-    
+    const fps = 30;
+    const slides = course?.chapterContentSlides??[];
+
+    console.log("durationBySlide", durationBySlide);
+
+
+
+const durationInFrames = useMemo(() => {
+  if (!durationBySlide) return 0;
+
+  return slides.reduce((sum, slide) => {
+    return sum + (durationBySlide[slide.slideId] ?? fps * 6);
+  }, 0);
+}, [durationBySlide, slides, fps]);
+
+console.log("durationInFrames", durationInFrames);
+
+if( !durationBySlide ){
+    return <Loader2Icon/>
+}
   return (
     <div className='w-full min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 flex items-center overflow-hidden relative'>
         {/* Animated background elements */}
@@ -94,8 +112,12 @@ const CourseInfoCard = ({course} : {course:Course | undefined} ) => {
                     {isVideoOpen ? (
                       <div className='relative w-full h-full rounded-3xl overflow-hidden'>
                         <Player
-                          component={ChapterVideo}
-                          durationInFrames={30}
+                          component={CourseComposition}
+                          inputProps={{
+                            slides:slides,
+                            durationsBySlideId:durationBySlide
+                          }}
+                          durationInFrames={durationInFrames || 30}
                           compositionWidth={1280}
                           compositionHeight={720}
                           fps={30}

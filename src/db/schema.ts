@@ -31,7 +31,7 @@ export const chaptersTable = pgTable("chapters",{
 })
 
 
-export const chapterContentSlides = pgTable("chapter_content_slies",{
+export const chapterContentSlides = pgTable("chapter_content_slides",{
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
     courseId: varchar({ length: 255 }).notNull(),
     chapterId: varchar({ length: 255 }).notNull(),
