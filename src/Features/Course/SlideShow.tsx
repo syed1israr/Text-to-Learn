@@ -86,6 +86,10 @@ const SlideShow = ({ slides, onClose, subContentTitle, initialSlideIndex = 0 }: 
 
 
   const injectRevealRuntime = (html: string) => {
+    if (!html || html.trim() === '') {
+      return '<html><body style="margin:0;padding:0;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif">No slide content available</body></html>'
+    }
+    
     const REVEAL_RUNTIME_SCRIPT = `
       <script>
       (function () {
@@ -104,14 +108,31 @@ const SlideShow = ({ slides, onClose, subContentTitle, initialSlideIndex = 0 }: 
           if (msg.type === "RESET") reset();
           if (msg.type === "REVEAL") reveal(msg.id);
         });
+        // Initial reset
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', reset);
+        } else {
+          reset();
+        }
       })();
       </script>
     `
     
-    if (html.includes("</body>")) {
-      return html.replace("</body>", `${REVEAL_RUNTIME_SCRIPT}</body>`)
+    // Ensure HTML has proper structure
+    let processedHtml = html.trim()
+    
+    // If it doesn't look like complete HTML, wrap it
+    if (!processedHtml.toLowerCase().includes('<html')) {
+      processedHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>${processedHtml}</body></html>`
     }
-    return html + REVEAL_RUNTIME_SCRIPT
+    
+    if (processedHtml.includes("</body>")) {
+      return processedHtml.replace("</body>", `${REVEAL_RUNTIME_SCRIPT}</body>`)
+    }
+    if (processedHtml.includes("</html>")) {
+      return processedHtml.replace("</html>", `${REVEAL_RUNTIME_SCRIPT}</html>`)
+    }
+    return processedHtml + REVEAL_RUNTIME_SCRIPT
   }
 
   const goToSlide = (index: number) => {
@@ -201,30 +222,41 @@ const SlideShow = ({ slides, onClose, subContentTitle, initialSlideIndex = 0 }: 
         </div>
 
         {/* Slide content */}
-        <div className='flex-1 relative overflow-hidden'>
-          <div className='absolute inset-0 flex items-center justify-center p-8'>
-            <div className='relative w-full h-full max-w-6xl max-h-full glass-cyber geometric-border overflow-hidden'>
+        <div className='flex-1 relative overflow-hidden bg-black'>
+          <div className='absolute inset-0 flex items-center justify-center p-4 md:p-8'>
+            <div className='relative w-full max-w-6xl aspect-video glass-cyber geometric-border overflow-hidden bg-black'>
+              {/* Corner accents for slide container */}
+              <div className='absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary z-10'></div>
+              <div className='absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary z-10'></div>
+              <div className='absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary z-10'></div>
+              <div className='absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary z-10'></div>
+              
               <iframe
                 ref={(el) => {
                   iframeRefs.current[currentSlideIndex] = el
                 }}
-                srcDoc={injectRevealRuntime(currentSlide.html)}
+                srcDoc={injectRevealRuntime(currentSlide.html || '<html><body style="margin:0;padding:0;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif">Loading slide...</body></html>')}
                 className='w-full h-full border-none'
-                sandbox='allow-scripts allow-same-origin'
-                style={{ aspectRatio: '16/9' }}
-                onLoad={() => {
+                sandbox='allow-scripts allow-same-origin allow-forms allow-popups'
+                style={{ 
+                  width: '100%', 
+                  height: '100%',
+                  minHeight: '500px',
+                  display: 'block'
+                }}
+                onLoad={(e) => {
                   const iframe = iframeRefs.current[currentSlideIndex]
                   if (iframe?.contentWindow) {
                     iframe.contentWindow.postMessage({ type: 'RESET' }, '*')
+                    // Wait a bit for iframe to fully render
+                    setTimeout(() => {
+                      const audio = audioRefs.current[currentSlideIndex]
+                      if (audio && audio.readyState >= 2) {
+                        const event = new Event('timeupdate')
+                        audio.dispatchEvent(event)
+                      }
+                    }, 200)
                   }
-                  // Trigger reveal update after iframe loads
-                  setTimeout(() => {
-                    const audio = audioRefs.current[currentSlideIndex]
-                    if (audio && audio.readyState >= 2) {
-                      const event = new Event('timeupdate')
-                      audio.dispatchEvent(event)
-                    }
-                  }, 100)
                 }}
               />
               <audio
@@ -241,6 +273,10 @@ const SlideShow = ({ slides, onClose, subContentTitle, initialSlideIndex = 0 }: 
                     iframe.contentWindow.postMessage({ type: 'RESET' }, '*')
                   }
                 }}
+                onError={(e) => {
+                  console.error('Audio load error:', e)
+                }}
+                crossOrigin="anonymous"
                 className='hidden'
               />
             </div>

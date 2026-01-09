@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${orbitron.variable} ${rajdhani.variable} ${spaceGrotesk.variable} antialiased bg-neon-gradient bg-cyber-grid`}
       >
