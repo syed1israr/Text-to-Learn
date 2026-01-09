@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Course } from '@/lib/types'
-import { Play, Clock, BookMarked, ChevronRight, X } from 'lucide-react'
-import React, { useState } from 'react'
 import { Player } from '@remotion/player'
-import ChapterVideo from './ChapterVideo'
+import { BookMarked, ChevronRight, Clock, Play, X } from 'lucide-react'
+import { useState } from 'react'
+import { CourseComposition } from './ChapterVideo'
 
-const Chapters =({course} : {course:Course | undefined} ) => {
+const Chapters =({course,durationBySlide} : {course:Course | undefined,durationBySlide:Record<string,number>|null} ) => {
   const [expandedChapter, setExpandedChapter] = useState<number | null>(null)
   const [completedChapters, setCompletedChapters] = useState<Set<number>>(new Set())
   const [playingChapter, setPlayingChapter] = useState<number | null>(null)
@@ -19,7 +19,11 @@ const Chapters =({course} : {course:Course | undefined} ) => {
     }
     setCompletedChapters(newCompleted)
   }
-
+  const slides = course?.chapterContentSlides??[];
+  const getChapterinDuration = (chapterId:string) =>{
+    if( !durationBySlide || !course ) return 30;
+    return course.chapterContentSlides.filter((s) => s.chapterId === chapterId).reduce((s,sl) => s + (durationBySlide[sl.slideId] ?? 30),0);
+  }
   return (
     <div className='w-full bg-linear-to-b from-white to-gray-50 dark:from-slate-900 dark:to-slate-950 py-24 relative overflow-hidden'>
         {/* Decorative elements */}
@@ -114,12 +118,16 @@ const Chapters =({course} : {course:Course | undefined} ) => {
                                   <div className='mt-6 space-y-3'>
                                     <div className='relative w-full bg-black rounded-xl overflow-hidden'>
                                       <Player
-                                        component={ChapterVideo}
-                                        durationInFrames={30}
+                                        component={CourseComposition}
+                                        durationInFrames={getChapterinDuration(m.chapterId)}
                                         compositionWidth={1280}
                                         compositionHeight={720}
                                         fps={30}
                                         controls
+                                        inputProps={{
+                                        slides:slides,
+                                        durationsBySlideId:durationBySlide ?? {}
+                                        }}
                                         style={{
                                           width: "100%",
                                           aspectRatio: "16/9"

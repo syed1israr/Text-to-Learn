@@ -43,10 +43,10 @@ export async function POST(req: NextRequest) {
 
         const parsedContent = JSON.parse(cleanedContent);
 
-        const videoContentJson = TESTING_VIDEO_SLIES;
+        const videoContentJson = parsedContent;
         const audiFileUrl: string[] = [];
         for( let i = 0; i < videoContentJson.length; i++){
-            if( i > 0 ) break;
+            
             const narration = videoContentJson[i].narration.fullText;
             const fondaRes  = await axios.post('https://api.fonada.ai/tts/generate-audio-large',{
                 input:narration,
@@ -70,21 +70,37 @@ export async function POST(req: NextRequest) {
         }
 
 
-            videoContentJson.forEach( async(s,id) =>{
-                const res = await db.insert(chapterContentSlides).values({
-                    chapterId:chapter.chapterId,
-                    courseId:courseId,
-                    slideIndex:videoContentJson[id].slideIndex,
-                    slideId:videoContentJson[id].slideId,
-                    audioFileName:videoContentJson[id].audioFileName,
-                    narration:videoContentJson[id].narration,
-                    revelData:videoContentJson[id].revelData,
-                    html:videoContentJson[id].html,
-                    audioFileUrl:audiFileUrl[id]??[]
-                }).returning();
-                console.log("result of route.ts",res)
-            })
-        
+            // videoContentJson.forEach( async(s: any, id: number) =>{
+            //     const res = await db.insert(chapterContentSlides).values({
+            //         chapterId:chapter.chapterId,
+            //         courseId:courseId,
+            //         slideIndex:videoContentJson[id].slideIndex,
+            //         slideId:videoContentJson[id].slideId,
+            //         audioFileName:videoContentJson[id].audioFileName,
+            //         narration:videoContentJson[id].narration,
+            //         revelData:videoContentJson[id].revelData,
+            //         html:videoContentJson[id].html,
+            //         audioFileUrl:audiFileUrl[id]??[]
+            //     }).returning();
+            //     console.log("result of route.ts",res)
+            // })
+
+            await Promise.all(
+                videoContentJson.map(async (s: any, id: number) => {
+                  return await db.insert(chapterContentSlides).values({
+                    chapterId: chapter.chapterId,
+                      courseId: courseId,
+                      slideIndex: videoContentJson[id].slideIndex,
+                      slideId: videoContentJson[id].slideId,
+                      audioFileName: videoContentJson[id].audioFileName,
+                      narration: videoContentJson[id].narration,
+                      revelData: videoContentJson[id].revelData,
+                      html: videoContentJson[id].html,
+                      audioFileUrl: audiFileUrl[id] ?? '' 
+                  }).returning();
+              })
+          )
+
         return NextResponse.json({...videoContentJson, audiFileUrl});
     } catch (error) {
         console.error("Video generation error:", error);
@@ -103,15 +119,22 @@ export async function POST(req: NextRequest) {
 const SaveAudioToStorage = async( audioBuffer:Buffer,fileName:string) =>{
     const blobService = BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING!);
     const container = blobService.getContainerClient(process.env.AZURE_STORAGE_CONTAINER!);
+    if (!process.env.AZURE_STORAGE_CONNECTION_STRING) {
+        throw new Error('AZURE_STORAGE_CONNECTION_STRING is not configured');
+    }
     const blobName = `${fileName}.mp3`;
     const blockBlob = container.getBlockBlobClient(blobName);
+    if (!process.env.AZURE_STORAGE_CONTAINER) {
+        throw new Error('AZURE_STORAGE_CONTAINER is not configured');
+    }
+    
     await blockBlob.uploadData(audioBuffer,{
         blobHTTPHeaders:{
             blobContentType:"audio/mpeg",
             blobCacheControl:"public, max-age=32536000, immutable"
         }
     })
-    const publicBase = process.env.AZURE_STORAGE_PUBLIC_BASE_URL;
-    const url =  publicBase ? publicBase + "/" + container.containerName + "/" + blobName : blockBlob.url;
-    return url;
+  const publicBase = process.env.AZURE_STORAGE_PUBLIC_BASE_URL; 
+  const url = publicBase ? publicBase + "/" + container.containerName + "/" + blobName : blockBlob.url; 
+  return url;
 }
