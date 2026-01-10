@@ -13,8 +13,8 @@ const CourseList = () => {
     try {
       setLoading(true);
       const res = await axios.get("/api/course");
-      console.log("course Created by user",res.data)
-      setcourseList(res.data)
+      const data = Array.isArray(res.data) ? res.data : [];
+      setcourseList(data)
     } catch (error) {
       console.error("Failed to load courses", error);
     } finally {
@@ -52,7 +52,7 @@ const CourseList = () => {
           </div>
         ) : (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-            {courseList.map((c,idx) => (
+            { Array.isArray(courseList) && courseList?.map((c,idx) => (
               <CourseListCard courseItem={c} key={idx}/>
             ))}
           </div>
