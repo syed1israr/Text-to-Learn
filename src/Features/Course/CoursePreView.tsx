@@ -3,12 +3,13 @@
 import { Course } from "@/lib/types";
 import axios from "axios";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import Chapters from "./Chapters";
-import CourseInfoCard from "./CourseInfoCard";
 import { toast } from "sonner";
 import { getAudioData } from "@remotion/media-utils";
 import GenerationAnimation from "./GenerationAnimation";
+import { Player } from '@remotion/player';
+import { CourseComposition } from './ChapterVideo';
 
 const CoursePreView =  () => {
   const { courseId : id } = useParams();
@@ -149,6 +150,41 @@ const courseHandler = async () => {
 
   
 
+  const [selectedChapter, setSelectedChapter] = useState<number | null>(null)
+  const [videoMode, setVideoMode] = useState<'course' | 'chapter' | null>(null)
+  const videoSectionRef = useRef<HTMLDivElement>(null)
+
+  const selectedChapterSlides = selectedChapter !== null && courseDetails
+    ? courseDetails.chapterContentSlides.filter(s => s.chapterId === courseDetails.courseLayout.chapters[selectedChapter]?.chapterId)
+    : []
+
+  const getSelectedChapterDuration = () => {
+    if (selectedChapter === null || !courseDetails || !durationBySlide) return 30
+    const chapter = courseDetails.courseLayout.chapters[selectedChapter]
+    if (!chapter) return 30
+    return courseDetails.chapterContentSlides
+      .filter(s => s.chapterId === chapter.chapterId)
+      .reduce((acc, s) => acc + (durationBySlide[s.slideId] ?? 30), 0)
+  }
+
+  const getCourseDuration = () => {
+    if (!durationBySlide || !courseDetails) return 30
+    return slides.reduce((sum, slide) => {
+      const dur = durationBySlide[slide.slideId] ?? 30
+      return sum + dur
+    }, 0)
+  }
+
+  const courseDurationInFrames = useMemo(() => {
+    if (!durationBySlide) return 0
+    const GAP_FRAMES = Math.round(1 * fps)
+    return slides.reduce((sum, slide, idx) => {
+      const dur = durationBySlide[slide.slideId] ?? fps * 6
+      const gap = idx === slides.length - 1 ? 0 : GAP_FRAMES
+      return sum + dur + gap
+    }, 0)
+  }, [durationBySlide, slides, fps])
+
   return (
     <>
       {isGenerating && (
@@ -158,9 +194,105 @@ const courseHandler = async () => {
           message={generationProgress.message}
         />
       )}
-      <div className="w-full">
-        <CourseInfoCard course={courseDetails} durationBySlide={durationBySlide}/>
-        <Chapters course={courseDetails}  durationBySlide={durationBySlide} />
+      <div className="w-full min-h-screen bg-background pt-28 md:pt-32">
+        {courseDetails && (
+          <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+            {/* Course Header */}
+            <div className="mb-8 space-y-4">
+              <h1 className="font-display font-black text-4xl md:text-6xl text-neon-cyan uppercase tracking-tight">
+                {courseDetails.courseName}
+              </h1>
+              <p className="font-mono text-sm text-muted-foreground max-w-3xl">
+                {courseDetails.courseLayout.courseDescription}
+              </p>
+              <div className="flex gap-4 items-center text-sm font-mono">
+                <span className="geometric-border glass-cyber px-3 py-1 text-primary">
+                  {courseDetails.courseLayout.level.toUpperCase()}
+                </span>
+                <span className="text-muted-foreground">
+                  {courseDetails.courseLayout.totalChapters} Modules
+                </span>
+              </div>
+            </div>
+
+            {/* Main Video Section - Full Width */}
+            {durationBySlide && slides.length > 0 && (
+              <div ref={videoSectionRef} className="mb-8 glass-cyber geometric-border p-6 space-y-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-display font-bold text-2xl text-primary uppercase">
+                    {videoMode === 'chapter' && selectedChapter !== null 
+                      ? courseDetails.courseLayout.chapters[selectedChapter]?.chapterTitle
+                      : 'Full Course Preview'}
+                  </h2>
+                  {videoMode === 'chapter' && (
+                    <button
+                      onClick={() => {
+                        setVideoMode(null)
+                        setSelectedChapter(null)
+                      }}
+                      className="geometric-border glass-cyber px-4 py-2 text-primary hover:bg-primary/10 font-mono text-sm uppercase transition-all hover-glow"
+                    >
+                      Show Full Course
+                    </button>
+                  )}
+                </div>
+                
+                <div className="relative w-full aspect-video bg-black geometric-border overflow-hidden">
+                  <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary z-10"></div>
+                  <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary z-10"></div>
+                  <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary z-10"></div>
+                  <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary z-10"></div>
+                  
+                  <Player
+                    component={CourseComposition}
+                    inputProps={{
+                      slides: videoMode === 'chapter' && selectedChapter !== null && selectedChapterSlides.length > 0
+                        ? selectedChapterSlides
+                        : slides,
+                      durationsBySlideId: durationBySlide ?? {}
+                    }}
+                    durationInFrames={
+                      videoMode === 'chapter' && selectedChapter !== null
+                        ? getSelectedChapterDuration()
+                        : courseDurationInFrames || 30
+                    }
+                    compositionWidth={1280}
+                    compositionHeight={720}
+                    fps={30}
+                    controls
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+            
+            {!durationBySlide && slides.length === 0 && (
+              <div className="mb-8 glass-cyber geometric-border p-12 text-center">
+                <p className="font-mono text-muted-foreground">Course content is being generated. Please wait...</p>
+              </div>
+            )}
+
+            {/* Chapters List - Below Video */}
+            <Chapters 
+              course={courseDetails} 
+              durationBySlide={durationBySlide}
+              onChapterSelect={(index) => {
+                setSelectedChapter(index)
+                setVideoMode('chapter')
+                // Scroll to video section smoothly
+                setTimeout(() => {
+                  videoSectionRef.current?.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                  })
+                }, 100)
+              }}
+            />
+          </div>
+        )}
       </div>
     </>
   )
