@@ -34,12 +34,10 @@ const Hero = () => {
         type,
         courseId:courseId
       });
-      console.log("data",res.data)
       setloading(false);
       toast.success("Course matrix generated successfully", {id : toastId});
       router.push(`/course/${courseId}`)
     } catch (error) {
-      console.log("course_layout_error",error);
       setloading(false);
       toast.error("Generation failed. Please retry.",{id:toastId})
     }

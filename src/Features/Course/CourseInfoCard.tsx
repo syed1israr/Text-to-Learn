@@ -9,7 +9,7 @@ const CourseInfoCard = ({course,durationBySlide} : {course:Course | undefined,du
   const fps = 30;
   const slides = course?.chapterContentSlides??[];
 
-  console.log("durationBySlide", durationBySlide);
+ 
 
   const durationInFrames = useMemo(() => {
     if (!durationBySlide) return 0;
@@ -21,7 +21,7 @@ const CourseInfoCard = ({course,durationBySlide} : {course:Course | undefined,du
     }, 0);
   }, [durationBySlide, slides, fps]);
 
-  console.log("durationInFrames", durationInFrames);
+  
 
   if( !durationBySlide ){
     return (
@@ -44,8 +44,8 @@ const CourseInfoCard = ({course,durationBySlide} : {course:Course | undefined,du
       <div className='absolute inset-0 bg-cyber-grid opacity-30'></div>
       
       {/* Diagonal accent lines */}
-      <div className='absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary to-transparent'></div>
-      <div className='absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-accent to-transparent'></div>
+      <div className='absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-primary to-transparent'></div>
+      <div className='absolute bottom-0 left-0 w-full h-px bg-linear-to-r from-transparent via-accent to-transparent'></div>
       
       <div className='relative z-10 max-w-7xl mx-auto w-full'>
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>
@@ -135,7 +135,7 @@ const CourseInfoCard = ({course,durationBySlide} : {course:Course | undefined,du
           </div>
           
           {/* Right Side - Visual Showcase */}
-          <div className='relative h-[500px] hidden lg:flex items-center justify-center'>
+          <div className='relative h-125 hidden lg:flex items-center justify-center'>
             <div className='absolute inset-0 geometric-border glass-cyber shadow-neon-lg'></div>
             <div className='absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-primary'></div>
             <div className='absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-primary'></div>

@@ -64,27 +64,9 @@ export async function POST(req: NextRequest) {
 
             const audioBuffer = Buffer.from(fondaRes.data);
             const audioUrl = await SaveAudioToStorage(audioBuffer,videoContentJson[i].audioFileName);
-            console.log(audioUrl);
             audiFileUrl.push(audioUrl);;
 
         }
-
-
-            // videoContentJson.forEach( async(s: any, id: number) =>{
-            //     const res = await db.insert(chapterContentSlides).values({
-            //         chapterId:chapter.chapterId,
-            //         courseId:courseId,
-            //         slideIndex:videoContentJson[id].slideIndex,
-            //         slideId:videoContentJson[id].slideId,
-            //         audioFileName:videoContentJson[id].audioFileName,
-            //         narration:videoContentJson[id].narration,
-            //         revelData:videoContentJson[id].revelData,
-            //         html:videoContentJson[id].html,
-            //         audioFileUrl:audiFileUrl[id]??[]
-            //     }).returning();
-            //     console.log("result of route.ts",res)
-            // })
-
             await Promise.all(
                 videoContentJson.map(async (s: any, id: number) => {
                   return await db.insert(chapterContentSlides).values({

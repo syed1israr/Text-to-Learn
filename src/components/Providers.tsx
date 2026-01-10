@@ -10,9 +10,9 @@ export const Providers = ({ children } : { children : React.ReactNode} ) =>{
     const [User, setUser] = useState(null)
 
     const createNewUser = async () =>{
-        console.log("creating user func called");
+        
         const res = await axios.post("/api/user",{});
-        console.log(res.data)
+       
         setUser(res.data)
     }
 

@@ -13,7 +13,7 @@ import { NextRequest, NextResponse } from "next/server";
         const userCourses = await db.select().from(courseTable).where(
             eq(courseTable.userId,user?.primaryEmailAddress?.emailAddress as string)
         ).orderBy(desc(courseTable.id));
-
+        
         return NextResponse.json(userCourses)
      }
  
