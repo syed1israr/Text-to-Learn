@@ -7,7 +7,7 @@ import {
   Play,
   Zap
 } from 'lucide-react'
-import { useState, useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import NotesView from './NotesView'
 
 type ContentMode = 'notes' | 'video' | null

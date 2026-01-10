@@ -1,9 +1,9 @@
 "use client"
 import { Course } from '@/lib/types'
 import axios from 'axios'
-import React, { useEffect, useState } from 'react'
-import CourseListCard from '../Course/CourseListCard'
 import { Database, Loader2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import CourseListCard from '../Course/CourseListCard'
 
 const CourseList = () => {
   const [courseList, setcourseList] = useState<Course[]>([]);
@@ -27,7 +27,7 @@ const CourseList = () => {
   return (
     <section className='w-full py-16 px-4 md:px-8'>
       <div className='max-w-6xl mx-auto'>
-        {/* Section header */}
+     
         <div className='mb-10 space-y-2'>
           <h2 className='text-3xl font-semibold text-foreground'>
             My Courses
@@ -37,7 +37,7 @@ const CourseList = () => {
           </p>
         </div>
 
-        {/* Course grid */}
+      
         {loading ? (
           <div className='flex items-center justify-center py-20'>
             <div className='text-center space-y-3'>

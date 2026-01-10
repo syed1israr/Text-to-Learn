@@ -1,15 +1,11 @@
-
-
 import React, { useEffect, useMemo, useRef } from "react";
 import {
     AbsoluteFill,
-    Sequence,
     Audio,
-    useVideoConfig,
+    Sequence,
     useCurrentFrame,
+    useVideoConfig,
 } from "remotion";
-
-
 
 type CaptionChunk = {
     timestamp: [number, number];

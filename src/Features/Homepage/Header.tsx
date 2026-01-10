@@ -1,10 +1,10 @@
 'use client'
 
 import { Button } from "@/components/ui/button";
-import { SignInButton, UserButton, useUser } from "@clerk/nextjs"
-import { Menu, X } from "lucide-react"
-import { useState } from "react"
+import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
+import { Menu, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const Header = () => {
   const { user } = useUser();
@@ -15,7 +15,7 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 w-full bg-background/80 backdrop-blur-sm border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+          
           <div 
             className="flex items-center gap-3 cursor-pointer"
             onClick={() => {
@@ -35,7 +35,7 @@ const Header = () => {
             <span className="text-xs text-muted-foreground hidden sm:inline"> <span className="text-primary">AI-Powered</span>  Course Generator</span>
           </div>
 
-          {/* Desktop Navigation */}
+          
           <nav className="hidden md:flex items-center gap-1">
             <button
               onClick={() => router.push("/")}
@@ -59,7 +59,7 @@ const Header = () => {
             </button>
           </nav>
 
-          {/* User section */}
+       
           <div className="flex items-center gap-3">
             {user ? (
               <UserButton />
@@ -71,7 +71,7 @@ const Header = () => {
               </SignInButton>
             )}
             
-            {/* Mobile menu button */}
+            
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 text-foreground hover:bg-muted rounded transition-colors"
@@ -81,7 +81,7 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile menu */}
+       
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-border py-2">
             <nav className="flex flex-col">

@@ -1,8 +1,8 @@
 'use client'
 
 import { chapterContentSlides } from '@/lib/types'
-import { X, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react'
-import { useState, useMemo } from 'react'
+import { BookOpen, ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { useMemo, useState } from 'react'
 
 type NotesViewProps = {
   slides: chapterContentSlides[]

@@ -1,12 +1,12 @@
+import { db } from "@/db";
+import { chapterContentSlides } from "@/db/schema";
 import { client } from "@/lib/config";
-import { Generate_Video_Prompt, TESTING_VIDEO_SLIES } from "@/lib/constant";
+import { Generate_Video_Prompt } from "@/lib/constant";
+import { BlobServiceClient } from "@azure/storage-blob";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 
-import { db } from "@/db";
-import { chapterContentSlides } from "@/db/schema";
-import { BlobServiceClient } from "@azure/storage-blob";
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
