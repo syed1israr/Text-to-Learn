@@ -57,7 +57,7 @@ const SlideShow = ({ slides, onClose, subContentTitle, initialSlideIndex = 0 }: 
       revelData.forEach((revealId, index) => {
         const revealTime = ((index + 1) / (revelData.length + 1)) * audio.duration
         if (currentTime >= revealTime) {
-          iframe.contentWindow.postMessage({ type: 'REVEAL', id: revealId }, '*')
+          iframe?.contentWindow?.postMessage({ type: 'REVEAL', id: revealId }, '*')
         }
       })
     }
