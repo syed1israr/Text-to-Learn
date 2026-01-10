@@ -1,30 +1,21 @@
 import type { Metadata } from "next";
-import { Orbitron, Rajdhani, Space_Grotesk } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { Toaster } from "@/components/ui/sonner";
 
-const orbitron = Orbitron({
-  variable: "--font-orbitron",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-});
-
-const rajdhani = Rajdhani({
-  variable: "--font-rajdhani",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
   title: "Text-to-Learn: AI-Powered Course Generator",
   description: "AI-Powered Course Generator",
+  icons: {
+    icon: "/logo.svg",
+  },
 };
 
 export default function RootLayout({
@@ -35,9 +26,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${orbitron.variable} ${rajdhani.variable} ${spaceGrotesk.variable} antialiased bg-neon-gradient bg-cyber-grid`}
+        className={`${inter.variable} antialiased bg-background text-foreground`}
       >
-        <Providers>{children}<Toaster position="bottom-right" richColors className="dark"/> </Providers>
+        <Providers>{children}<Toaster position="bottom-right" richColors/> </Providers>
       </body>
     </html>
   );

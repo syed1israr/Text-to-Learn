@@ -167,13 +167,6 @@ const courseHandler = async () => {
       .reduce((acc, s) => acc + (durationBySlide[s.slideId] ?? 30), 0)
   }
 
-  const getCourseDuration = () => {
-    if (!durationBySlide || !courseDetails) return 30
-    return slides.reduce((sum, slide) => {
-      const dur = durationBySlide[slide.slideId] ?? 30
-      return sum + dur
-    }, 0)
-  }
 
   const courseDurationInFrames = useMemo(() => {
     if (!durationBySlide) return 0
@@ -194,32 +187,32 @@ const courseHandler = async () => {
           message={generationProgress.message}
         />
       )}
-      <div className="w-full min-h-screen bg-background pt-28 md:pt-32">
+      <div className="w-full min-h-screen bg-background pt-20">
         {courseDetails && (
-          <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             {/* Course Header */}
-            <div className="mb-8 space-y-4">
-              <h1 className="font-display font-black text-4xl md:text-6xl text-neon-cyan uppercase tracking-tight">
+            <div className="mb-12 space-y-3">
+              <h1 className="text-4xl md:text-5xl font-semibold text-foreground">
                 {courseDetails.courseName}
               </h1>
-              <p className="font-mono text-sm text-muted-foreground max-w-3xl">
+              <p className="text-base text-muted-foreground max-w-3xl">
                 {courseDetails.courseLayout.courseDescription}
               </p>
-              <div className="flex gap-4 items-center text-sm font-mono">
-                <span className="geometric-border glass-cyber px-3 py-1 text-primary">
-                  {courseDetails.courseLayout.level.toUpperCase()}
+              <div className="flex gap-3 items-center text-sm">
+                <span className="px-2.5 py-1 bg-muted text-muted-foreground rounded">
+                  {courseDetails.courseLayout.level}
                 </span>
                 <span className="text-muted-foreground">
-                  {courseDetails.courseLayout.totalChapters} Modules
+                  {courseDetails.courseLayout.totalChapters} modules
                 </span>
               </div>
             </div>
 
             {/* Main Video Section - Full Width */}
             {durationBySlide && slides.length > 0 && (
-              <div ref={videoSectionRef} className="mb-8 glass-cyber geometric-border p-6 space-y-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-display font-bold text-2xl text-primary uppercase">
+              <div ref={videoSectionRef} className="mb-12 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold text-foreground">
                     {videoMode === 'chapter' && selectedChapter !== null 
                       ? courseDetails.courseLayout.chapters[selectedChapter]?.chapterTitle
                       : 'Full Course Preview'}
@@ -230,19 +223,14 @@ const courseHandler = async () => {
                         setVideoMode(null)
                         setSelectedChapter(null)
                       }}
-                      className="geometric-border glass-cyber px-4 py-2 text-primary hover:bg-primary/10 font-mono text-sm uppercase transition-all hover-glow"
+                      className="px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded transition-colors"
                     >
                       Show Full Course
                     </button>
                   )}
                 </div>
                 
-                <div className="relative w-full aspect-video bg-black geometric-border overflow-hidden">
-                  <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary z-10"></div>
-                  <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary z-10"></div>
-                  <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary z-10"></div>
-                  <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary z-10"></div>
-                  
+                <div className="w-full aspect-video bg-black rounded-lg overflow-hidden border border-border">
                   <Player
                     component={CourseComposition}
                     inputProps={{
@@ -270,8 +258,8 @@ const courseHandler = async () => {
             )}
             
             {!durationBySlide && slides.length === 0 && (
-              <div className="mb-8 glass-cyber geometric-border p-12 text-center">
-                <p className="font-mono text-muted-foreground">Course content is being generated. Please wait...</p>
+              <div className="mb-12 p-12 text-center border border-border rounded-lg">
+                <p className="text-muted-foreground">Course content is being generated. Please wait...</p>
               </div>
             )}
 
