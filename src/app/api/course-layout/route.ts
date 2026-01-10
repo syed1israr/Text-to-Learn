@@ -7,7 +7,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    // 1. Parse and validate request body
     const body = await req.json();
     const { userInput, courseId, type } = body;
 
@@ -17,19 +16,14 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    // 2. Authenticate user
     const user = await currentUser();
     const email = user?.primaryEmailAddress?.emailAddress;
-
     if (!email) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
       );
     }
-
-    // 3. Call AI model
     const completion = await client.chat.completions.create({
       model: "gpt-5-mini",
       messages: [
@@ -37,17 +31,13 @@ export async function POST(req: NextRequest) {
         { role: "user", content: `Course Topic is ${userInput}` },
       ],
     });
-
     const rawContent = completion.choices[0]?.message?.content;
-
     if (!rawContent) {
       return NextResponse.json(
         { error: "Empty AI response" },
         { status: 500 }
       );
     }
-
-    // 4. Safely parse AI JSON
     let parsedCourse;
     try {
       parsedCourse = JSON.parse(rawContent);
@@ -57,16 +47,12 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
-
     if (!parsedCourse.courseName) {
       return NextResponse.json(
         { error: "Invalid course format from AI" },
         { status: 500 }
       );
     }
-
-    // 5. Persist to database
-       // 5. Persist to database
     try {
        await db.insert(courseTable).values({
          courseId,
@@ -91,7 +77,7 @@ export async function POST(req: NextRequest) {
     }
     throw dbError;
    }
-    // 6. Respond with generated course
+
     return NextResponse.json(parsedCourse, { status: 201 });
 
   } catch (error) {

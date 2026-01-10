@@ -1,9 +1,8 @@
 'use client'
-import { InputGroup, InputGroupTextarea } from '@/components/ui/input-group'
 import { Button } from '@/components/ui/button'
+import { InputGroupTextarea } from '@/components/ui/input-group'
 import { Loader2, Rocket } from 'lucide-react'
 import { useState } from 'react'
-
 import {
   Select,
   SelectContent,
@@ -12,10 +11,10 @@ import {
   SelectValue
 } from "@/components/ui/select"
 import { courseGeneratorData } from '@/lib/constant'
-import axios from 'axios'
-import { toast } from 'sonner'
 import { SignInButton, useUser } from '@clerk/nextjs'
+import axios from 'axios'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 
 const Hero = () => {
@@ -48,7 +47,7 @@ const Hero = () => {
   return (
     <div className='min-h-screen flex items-center justify-center py-24 px-4'>
       <div className='w-full max-w-3xl space-y-12'>
-        {/* Header section */}
+        
         <div className='text-center space-y-4'>
           <h1 className='text-5xl md:text-6xl font-semibold text-foreground leading-tight'>
             Text-to-Learn
@@ -61,7 +60,7 @@ const Hero = () => {
           </p>
         </div>
 
-        {/* Main input container */}
+       
         <div className="w-full space-y-4">
           <InputGroupTextarea
             data-slot="input-group-control"
@@ -113,7 +112,7 @@ const Hero = () => {
           )}
         </div>
 
-        {/* Quick prompt templates */}
+        
         <div className='space-y-3'>
           <p className='text-sm text-muted-foreground text-center'>Quick templates</p>
           <div className='flex gap-2 flex-wrap justify-center'>

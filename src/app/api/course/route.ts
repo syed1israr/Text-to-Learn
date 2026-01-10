@@ -7,7 +7,6 @@ import { NextRequest, NextResponse } from "next/server";
  export async function GET(req: NextRequest) {
      const courseId = req.nextUrl.searchParams.get("courseId");
      const user = await currentUser();
-
      if (!courseId) {
         
         const userCourses = await db.select().from(courseTable).where(
@@ -16,7 +15,6 @@ import { NextRequest, NextResponse } from "next/server";
         
         return NextResponse.json(userCourses)
      }
- 
     try {
          const res = await db
              .select()
@@ -35,21 +33,23 @@ import { NextRequest, NextResponse } from "next/server";
              .select()
              .from(chapterContentSlides)
              .where(eq(chapterContentSlides.courseId, courseId))
-  .orderBy(
-    asc(chapterContentSlides.chapterId),
-    asc(chapterContentSlides.slideIndex),
-    asc(chapterContentSlides.id),
-  );
+             .orderBy(
+                asc(chapterContentSlides.chapterId),
+                asc(chapterContentSlides.slideIndex),
+                asc(chapterContentSlides.id),
+              );
  
-         return NextResponse.json({
-             ...res[0],
-             chapterContentSlides: slides,
-         });
+            return NextResponse.json({
+                ...res[0],
+                chapterContentSlides: slides,
+            });
+
       } catch (error) {
-          console.error("Database error:", error);
-          return NextResponse.json(
-              { error: "Failed to fetch course data" },
-              { status: 500 }
-          );
+
+        console.error("Database error:", error);
+        return NextResponse.json(
+            { error: "Failed to fetch course data" },
+            { status: 500 }
+        );
       }
  }

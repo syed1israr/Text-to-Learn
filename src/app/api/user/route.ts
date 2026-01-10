@@ -5,7 +5,6 @@ import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST( req:NextRequest) {
-    
     const clerkUser = await currentUser();
     const email = clerkUser?.primaryEmailAddress?.emailAddress;
     const userDB = await db.select().from(usersTable).where(

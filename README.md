@@ -4,7 +4,10 @@ Text-to-Learn is a full-stack web application that transforms free-form topic de
 
 ## Live Demo
 
-**Live Application:** [https://text-to-learn-isr.vercel.app/](https://text-to-learn-isr.vercel.app/)
+**Live Application:** [Text to Learn](https://text-to-learn-isr.vercel.app/)
+
+**Demo Video:** [Watch Demo](https://drive.google.com/file/d/1eiFoogbdPyjOYTJ98yCXOhvh7J4zQWTJ/view?usp=sharing)
+
 
 The application is fully responsive and optimized for both desktop and mobile devices.
 

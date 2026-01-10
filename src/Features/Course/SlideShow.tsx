@@ -1,8 +1,8 @@
 'use client'
 
 import { chapterContentSlides } from '@/lib/types'
-import { ChevronLeft, ChevronRight, X, Play, Pause } from 'lucide-react'
-import { useState, useEffect, useRef } from 'react'
+import { ChevronLeft, ChevronRight, Pause, Play, X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 
 type SlideShowProps = {
   slides: chapterContentSlides[]
@@ -20,7 +20,7 @@ const SlideShow = ({ slides, onClose, subContentTitle, initialSlideIndex = 0 }: 
 
   const currentSlide = slides[currentSlideIndex]
 
-  // Reset slide when index changes
+
   useEffect(() => {
     const iframe = iframeRefs.current[currentSlideIndex]
     const audio = audioRefs.current[currentSlideIndex]
@@ -35,7 +35,7 @@ const SlideShow = ({ slides, onClose, subContentTitle, initialSlideIndex = 0 }: 
     }
   }, [currentSlideIndex])
 
-  // Handle reveal animations for current slide based on audio progress
+
   useEffect(() => {
     if (!currentSlide) return
 

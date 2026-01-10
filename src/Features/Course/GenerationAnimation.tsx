@@ -1,6 +1,6 @@
 'use client'
 
-import { Sparkles, Zap, Code2, FileText } from 'lucide-react'
+import { Code2, FileText, Sparkles } from 'lucide-react'
 
 type GenerationAnimationProps = {
   currentChapter: number
@@ -14,7 +14,7 @@ const GenerationAnimation = ({ currentChapter, totalChapters, message }: Generat
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur-sm">
       <div className="relative z-10 text-center space-y-6 max-w-md mx-auto px-4">
-        {/* Animated icon */}
+
         <div className="relative mx-auto w-20 h-20">
           <div className="absolute inset-0 bg-primary/10 rounded-full animate-pulse"></div>
           <div className="absolute inset-0 flex items-center justify-center">
@@ -22,7 +22,7 @@ const GenerationAnimation = ({ currentChapter, totalChapters, message }: Generat
           </div>
         </div>
 
-        {/* Progress indicator */}
+        
         <div className="space-y-2">
           <div className="text-sm font-medium text-foreground">
             Generating Content
@@ -37,7 +37,7 @@ const GenerationAnimation = ({ currentChapter, totalChapters, message }: Generat
           )}
         </div>
 
-        {/* Progress bar */}
+        
         <div className="w-full max-w-md mx-auto space-y-2">
           <div className="relative h-2 bg-muted rounded-full overflow-hidden">
             <div 
@@ -50,7 +50,7 @@ const GenerationAnimation = ({ currentChapter, totalChapters, message }: Generat
           </div>
         </div>
 
-        {/* Animated elements */}
+        
         <div className="flex items-center justify-center gap-6 pt-4">
           <div className="flex flex-col items-center gap-2">
             <Code2 className="w-6 h-6 text-muted-foreground animate-pulse" />

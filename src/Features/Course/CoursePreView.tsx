@@ -1,15 +1,15 @@
 'use client'
 
 import { Course } from "@/lib/types";
+import { getAudioData } from "@remotion/media-utils";
+import { Player } from '@remotion/player';
 import axios from "axios";
 import { useParams } from "next/navigation";
-import { useEffect, useState, useMemo, useRef } from "react";
-import Chapters from "./Chapters";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { getAudioData } from "@remotion/media-utils";
-import GenerationAnimation from "./GenerationAnimation";
-import { Player } from '@remotion/player';
+import Chapters from "./Chapters";
 import { CourseComposition } from './ChapterVideo';
+import GenerationAnimation from "./GenerationAnimation";
 
 const CoursePreView =  () => {
   const { courseId : id } = useParams();

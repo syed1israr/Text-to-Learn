@@ -8,9 +8,6 @@ const CourseInfoCard = ({course,durationBySlide} : {course:Course | undefined,du
   const [isVideoOpen, setIsVideoOpen] = useState(false)
   const fps = 30;
   const slides = course?.chapterContentSlides??[];
-
- 
-
   const durationInFrames = useMemo(() => {
     if (!durationBySlide) return 0;
     const GAP_FRAMES = Math.round(1 * fps);
