@@ -7,6 +7,8 @@ import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 
+
+
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
@@ -47,9 +49,23 @@ export async function POST(req: NextRequest) {
         const audiFileUrl: string[] = [];
         for( let i = 0; i < videoContentJson.length; i++){
             
+      
             const narration = videoContentJson[i].narration.fullText;
+
+                const MAX_CHARS = 2000; // safe margin below unknown limit
+
+                if (narration.length > MAX_CHARS) {
+                console.warn(
+                    `Narration too long (${narration.length}). Trimming to ${MAX_CHARS}.`
+                );
+                }
+
+            const safeNarration =
+            narration.length > MAX_CHARS
+                ? narration.slice(0, MAX_CHARS).replace(/[^.!?]*$/, "")
+                : narration;
             const fondaRes  = await axios.post('https://api.fonada.ai/tts/generate-audio-large',{
-                input:narration,
+                input:safeNarration,
                 voice:"Vaanee",
                 Languages:'English',
 

@@ -108,6 +108,7 @@ RULES:
 - slideId MUST be: "\${chapterSlug}-0\${slideIndex}" (example: "intro-setup-01")
 - audioFileName MUST be: "\${slideId}.mp3"
 - narration.fullText MUST be 3–6 friendly, professional, teacher-style sentences
+- Prefer short sentences and simple phrasing
 - narration text MUST NOT contain reveal tokens or keys (no "r1", "data-reveal", etc.)
 
 REVEAL SYSTEM (VERY IMPORTANT):
