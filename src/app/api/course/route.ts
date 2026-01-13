@@ -7,8 +7,10 @@ import { NextRequest, NextResponse } from "next/server";
  export async function GET(req: NextRequest) {
      const courseId = req.nextUrl.searchParams.get("courseId");
      const user = await currentUser();
+     if( !user ){
+        return NextResponse.json({ user: null }, { status: 200 });
+     }
      if (!courseId) {
-        
         const userCourses = await db.select().from(courseTable).where(
             eq(courseTable.userId,user?.primaryEmailAddress?.emailAddress as string)
         ).orderBy(desc(courseTable.id));
